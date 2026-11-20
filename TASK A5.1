@@ -1,0 +1,24 @@
+import re
+from collections import Counter
+
+POSITIVE = {"good", "clean", "fast", "helpful", "improved", "great"}
+NEGATIVE = {"bad", "dirty", "slow", "rude", "smoke", "broken", "toxic"}
+NEGATORS = {"not", "never", "no"}
+STOP_WORDS = {"the", "a", "an", "and", "or", "is", "are", "was", "were", "to", "of", "in", "on", "for", "from", "it", "this", "that"}
+
+def sentiment_score(text):
+    words = re.findall(r"[a-z']+", text.lower())
+    total, negate_next = 0, False
+    for word in words:
+        if word in NEGATORS:
+            negate_next = True
+            continue
+        value = 1 if word in POSITIVE else -1 if word in NEGATIVE else 0
+        if value:
+            total += -value if negate_next else value
+            negate_next = False
+    return total
+
+def sentiment_label(text):
+    score = sentiment_score(text)
+    return "positive" if score > 0 else "negative" if score < 0 else "neutral
