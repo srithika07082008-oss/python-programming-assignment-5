@@ -1,0 +1,26 @@
+import csv
+import io
+ 
+RAW = """station,date,pm25
+Adyar,2026-10-01,48
+Adyar,2026-10-02,NA
+Adyar,2026-10-03,-5
+Guindy,2026-10-01,95
+Guindy,2026-10-02,-5
+Guindy,2026-10-03,121
+"""
+ 
+def load_clean(text):
+    """Return (station, date, pm25) tuples for valid readings only."""
+    rows = []
+    reader = csv.DictReader(io.StringIO(text))
+    required = {"station", "date", "pm25"}
+ 
+    if not reader.fieldnames or not required.issubset(reader.fieldnames):
+        raise ValueError("CSV must contain station, date and pm25 columns")
+ 
+    for row in reader:
+        try:
+            station = row["station"].strip().title()
+            date = row["date"].strip()
+            raw_value = row["pm25"].strip()
