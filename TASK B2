@@ -1,0 +1,28 @@
+import csv
+import io
+import sqlite3
+ 
+def robust_read_csv(text):
+    if not text.strip():
+        raise ValueError("Input file is empty")
+ 
+    # Detect a likely delimiter from the header.
+    first_line = text.splitlines()[0]
+    delimiter = ";" if first_line.count(";") > first_line.count(",") else ","
+    reader = csv.DictReader(io.StringIO(text), delimiter=delimiter)
+ 
+    required = {"station", "date", "pm25"}
+    if not reader.fieldnames or not required.issubset(set(reader.fieldnames)):
+        raise ValueError("Missing required CSV column(s)")
+ 
+    valid = []
+    for row in reader:
+        try:
+            station = row["station"].strip().title()
+            date = row["date"].strip()
+            value = float(row["pm25"])
+            if station and date and 0 <= value <= 999:
+                valid.append((station, date, value))
+        except (ValueError, TypeError, AttributeError):
+            continue
+    return valid
