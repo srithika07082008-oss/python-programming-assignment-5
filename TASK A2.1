@@ -1,0 +1,29 @@
+from datetime import date, datetime
+
+MISSING = {"", "NA", "N/A", "NULL", "NONE"}
+
+def optional_number(value):
+    value = (value or "").strip()
+    if value.upper() in MISSING:
+        return None
+    number = float(value)
+    return number if number >= 0 else None
+
+def clean_reading(row):
+    station = (row.get("station") or "").strip().title()
+    if not station:
+        return None
+    reading_date = datetime.strptime(row["date"].strip(), "%Y-%m-%d").date().isoformat()
+    hour = datetime.strptime(row["hour"].strip(), "%H:%M").strftime("%H:%M")
+    pm25 = optional_number(row.get("pm25"))
+    if pm25 is not None and pm25 > 999:
+        return None
+    temp = optional_number(row.get("temperature"))
+    unit = (row.get("temperature_unit") or "C").strip().upper()
+    if temp is not None and unit == "F":
+        temp = (temp - 32) * 5 / 9
+    elif temp is not None and unit != "C":
+        return None
+    return {
+        "station": station, "date": reading_date, "hour": hour,
+        "pm25": pm25, "pm10": optional_number(row.get("pm10"))
