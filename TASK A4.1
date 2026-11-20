@@ -1,0 +1,12 @@
+import logging
+logging.basicConfig(level=logging.INFO, format="%(levelname)s: %(message)s")
+
+def validate_pm25(value):
+    assert value is None or value >= 0, "PM2.5 cannot be negative"
+    if value is not None and value > 999:
+        logging.warning("Rejected implausible PM2.5 value: %s", value)
+        return False
+    return True
+
+# Use logging.info(...) for progress and logging.exception(...) inside except blocks.
+# A debugger breakpoint can be set with: breakpoint()
