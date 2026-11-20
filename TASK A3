@@ -1,0 +1,21 @@
+# Example parameterized SQL queries for the board questions.
+# Assumes the schema from A1.2 and station_id has been looked up by name.
+
+AVERAGE_ADYAR_OCTOBER = """
+SELECT AVG(r.pm25)
+FROM readings AS r JOIN stations AS s USING (station_id)
+WHERE s.station_name = ?
+  AND r.reading_date >= ? AND r.reading_date < ?
+"""
+MAXIMUM_BY_STATION = """
+SELECT s.station_name, MAX(r.pm25)
+FROM readings AS r JOIN stations AS s USING (station_id)
+GROUP BY s.station_name
+"""
+VALID_READINGS_BY_DAY = """
+SELECT s.station_name, r.reading_date, COUNT(r.pm25)
+FROM readings AS r JOIN stations AS s USING (station_id)
+GROUP BY s.station_name, r.reading_date
+ORDER BY r.reading_date, s.station_name
+"""
+# Example: con.execute(AVERAGE_ADYAR_OCTOBER, ("Adyar", "2026-10-01", "2026-11-01")).fetchone()
