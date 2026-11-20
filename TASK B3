@@ -1,0 +1,28 @@
+from collections import defaultdict
+import sqlite3
+import time
+import random
+ 
+data = [
+    ("Adyar", "2026-10-01", 48.0),
+    ("Adyar", "2026-10-01", 52.0),
+    ("Guindy", "2026-10-01", 95.0),
+    ("Guindy", "2026-10-02", 5.0),
+    ("Guindy", "2026-10-02", 15.0),
+]
+ 
+# Method 1: plain Python loops
+acc = defaultdict(lambda: [0.0, 0])
+for station, day, value in data:
+    key = (station, day)
+    acc[key][0] += value
+    acc[key][1] += 1
+loop_result = {k: total / count for k, (total, count) in acc.items()}
+print("Loops:", loop_result)
+ 
+# Method 2: pandas (install with: python -m pip install pandas)
+try:
+    import pandas as pd
+    frame = pd.DataFrame(data, columns=["station", "date", "pm25"])
+    pandas_result = frame.groupby(["station", "date"])["pm25"].mean()
+    print("Pandas:", pandas_result.to_dict())
