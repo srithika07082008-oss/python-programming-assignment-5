@@ -1,0 +1,22 @@
+def inspect_csv(path):
+    path = Path(path)
+    if not path.exists() or path.stat().st_size == 0:
+        raise ValueError("CSV file is missing or empty")
+    with path.open("r", encoding="utf-8-sig", newline="") as f:
+        sample = f.read(4096)
+        f.seek(0)
+        try:
+            dialect = csv.Sniffer().sniff(sample, delimiters=",;")
+        except csv.Error:
+            dialect = csv.excel
+        reader = csv.DictReader(f, dialect=dialect)
+        headers = set(reader.fieldnames or [])
+        missing = REQUIRED - headers
+        if missing:
+            raise ValueError(f"Missing columns: {sorted(missing)}")
+        rows = list(reader)
+    return {"delimiter": dialect.delimiter, "row_count": len(rows), "headers": sorted(headers), "rows": rows}
+
+# Replace with the actual input file path.
+# report = inspect_csv("stations.csv")
+# print(report["delimiter"], report["row_count"], report["headers"])
