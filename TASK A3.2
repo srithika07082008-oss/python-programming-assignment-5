@@ -1,0 +1,11 @@
+DAILY_SUMMARY_SQL = """
+SELECT s.station_name, r.reading_date,
+       MIN(r.pm25) AS min_pm25,
+       MAX(r.pm25) AS max_pm25,
+       AVG(r.pm25) AS mean_pm25,
+       COUNT(r.pm25) AS valid_readings
+FROM readings AS r JOIN stations AS s USING (station_id)
+GROUP BY s.station_name, r.reading_date
+ORDER BY s.station_name, r.reading_date
+"""
+# daily_summary = con.execute(DAILY_SUMMARY_SQL).fetchall()
