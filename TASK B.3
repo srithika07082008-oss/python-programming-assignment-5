@@ -1,0 +1,25 @@
+import sqlite3
+ 
+readings = [
+    ("Adyar", "2026-10-01", 48.0),
+    ("Guindy", "2026-10-01", 95.0),
+    ("Guindy", "2026-10-03", 121.0),
+    ("Adyar", "2026-10-04", 60.0),
+]
+ 
+con = sqlite3.connect("air_quality.db")
+cur = con.cursor()
+ 
+cur.execute("""
+CREATE TABLE IF NOT EXISTS readings (
+    station TEXT NOT NULL,
+    date TEXT NOT NULL,
+    pm25 REAL NOT NULL CHECK(pm25 >= 0 AND pm25 <= 999),
+    UNIQUE(station, date)
+)
+""")
+ 
+cur.executemany(
+    "INSERT OR REPLACE INTO readings(station, date, pm25) VALUES (?, ?, ?)",
+    readings
+)
