@@ -1,0 +1,16 @@
+import matplotlib.pyplot as plt
+ 
+dates = ["2026-10-01", "2026-10-02", "2026-10-03"]
+adyar = [48, None, None]
+guindy = [95, 5, 121]
+ 
+plt.plot(dates, adyar, marker="o", label="Adyar")
+plt.plot(dates, guindy, marker="o", label="Guindy")
+plt.xlabel("Date")
+plt.ylabel("PM2.5 (µg/m³)")
+plt.title("Daily PM2.5 Readings by Station")
+plt.xticks(rotation=30)
+plt.legend()
+plt.grid(True)
+plt.tight_layout()
+plt.show()
