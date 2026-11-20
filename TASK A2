@@ -1,0 +1,27 @@
+import sqlite3
+
+def create_database(path="air_quality.db"):
+    con = sqlite3.connect(path)
+    con.execute("PRAGMA foreign_keys = ON")
+    con.executescript("""
+    CREATE TABLE IF NOT EXISTS stations (
+        station_id INTEGER PRIMARY KEY,
+        station_name TEXT NOT NULL UNIQUE
+    );
+    CREATE TABLE IF NOT EXISTS readings (
+        reading_id INTEGER PRIMARY KEY,
+        station_id INTEGER NOT NULL REFERENCES stations(station_id),
+        reading_date TEXT NOT NULL,
+        hour TEXT NOT NULL,
+        pm25 REAL CHECK(pm25 IS NULL OR pm25 >= 0),
+        pm10 REAL CHECK(pm10 IS NULL OR pm10 >= 0),
+        no2 REAL CHECK(no2 IS NULL OR no2 >= 0),
+        temperature_c REAL,
+        source_file TEXT,
+        UNIQUE(station_id, reading_date, hour)
+    );
+    CREATE INDEX IF NOT EXISTS idx_readings_station_date
+        ON readings(station_id, reading_date);
+    """)
+    con.commit()
+    return con
